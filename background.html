@@ -17,8 +17,7 @@ html,body{height:100%} body{background:transparent}
   <div class="absolute inset-0 pointer-events-none vignette"></div>
 </div>
 <script>
-const W=1920,H=1080,b=document.getElementById('b'),f=document.getElementById('f'),cb=b.getContext('2d'),cf=f.getContext('2d');
-b.width=f.width=W;b.height=f.height=H;
+
 const q=new URLSearchParams(location.search); const ACC=q.get('accent')||'#22d3ee', ACC2=q.get('accent2')||'#a78bfa';
 document.documentElement.style.setProperty('--accent',ACC); document.documentElement.style.setProperty('--accent-2',ACC2);
 document.getElementById('nebula').style.background=
