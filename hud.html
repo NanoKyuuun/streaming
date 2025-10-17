@@ -7,9 +7,9 @@
 :root{--accent:#22d3ee;--accent-2:#a78bfa;--ring:rgba(34,211,238,.55);--ring2:rgba(167,139,250,.45)}
 body{background:transparent;font-family:'Outfit',ui-sans-serif}
 #stage{width:1920px;height:120px}
-.card{border:1px solid rgba(148,163,184,.25);background:linear-gradient(180deg,rgba(0,10,20,.45),rgba(35,10,60,.35));backdrop-filter:blur(8px);box-shadow:0 0 0 1px rgba(148,163,184,.22) inset,0 6px 28px rgba(2,8,23,.35)}
+.card{border:1px solid rgb(255, 255, 255);background:linear-gradient(180deg,rgb(114, 186, 228),rgba(3, 151, 131, 0.35));backdrop-filter:blur(8px);box-shadow:0 0 0 1px rgba(148,163,184,.22) inset,0 6px 28px rgba(2,8,23,.35)}
 .pulse-dot{box-shadow:0 0 0 0 rgba(239,68,68,.7);animation:p 1.6s infinite}@keyframes p{100%{box-shadow:0 0 0 16px rgba(239,68,68,0)}}
-.hud{ text-shadow:0 0 12px rgba(34,211,238,.45),0 0 24px rgba(34,211,238,.2) }
+.hud{ text-shadow:0 0 12px rgba(255, 255, 255, 0.45),0 0 24px rgba(34,211,238,.2) }
 </style>
 </head><body>
 <div id="stage" class="relative">
@@ -19,12 +19,12 @@ body{background:transparent;font-family:'Outfit',ui-sans-serif}
         <span class="w-2.5 h-2.5 rounded-full bg-red-500 pulse-dot"></span>
         <span class="font-extrabold text-red-500 tracking-[0.3em]">LIVE</span>
       </span>
-      <span class="text-sm text-cyan-200/90">Viewers: <span id="v">1,264</span></span>
+      <span class="text-sm text-white">Viewers: <span id="v">1,264</span></span>
     </div>
-    <h1 id="t" class="text-[20px] font-extrabold tracking-[0.22em] text-cyan-100 hud">SPACE STATION • COMMAND STREAM</h1>
+    <h1 id="t" class="text-[20px] font-extrabold tracking-[0.22em] text-white hud">SPACE STATION • COMMAND STREAM</h1>
     <div class="text-right leading-tight">
-      <div id="clk" class="text-cyan-100/90 font-semibold hud text-[18px]">00:00:00</div>
-      <div class="text-[10px] text-slate-300/70"><span id="mode">UTC</span> <span id="date"></span></div>
+      <div id="clk" class="text-white font-semibold hud text-[18px]">00:00:00</div>
+      <div class="text-[10px] text-white"><span id="mode">UTC</span> <span id="date"></span></div>
     </div>
   </div>
 </div>
