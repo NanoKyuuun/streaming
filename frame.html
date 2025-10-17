@@ -1,0 +1,23 @@
+<!DOCTYPE html><html><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Cam Frame</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root{--accent:#22d3ee;--accent-2:#a78bfa;--ring:rgba(34,211,238,.55);--ring2:rgba(167,139,250,.45);--ringS:rgba(34,211,238,.2)}
+html,body{height:100%} body{background:transparent}
+#frame{position:absolute;inset:0;border:2px solid var(--ring);border-radius:28px;
+  box-shadow:0 0 32px var(--ringS),0 0 6px var(--ring),inset 0 0 0 1px var(--ring2);
+  background:linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.18))}
+#frame:before,#frame:after{content:"";position:absolute;width:120px;height:120px;border-radius:24px;border:3px solid transparent;filter:drop-shadow(0 0 16px var(--ring))}
+#frame:before{left:-6px;top:-6px;border-top-color:var(--accent);border-left-color:var(--accent-2)}
+#frame:after{right:-6px;bottom:-6px;border-right-color:var(--accent);border-bottom-color:var(--accent-2)}
+</style></head><body>
+<div id="frame"></div>
+<script>
+const q=new URLSearchParams(location.search);
+document.documentElement.style.setProperty('--accent', q.get('accent')||'#22d3ee');
+document.documentElement.style.setProperty('--accent-2', q.get('accent2')||'#a78bfa');
+const r = parseInt(q.get('radius')||'28',10);
+document.getElementById('frame').style.borderRadius = r+'px';
+</script>
+</body></html>

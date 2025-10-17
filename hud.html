@@ -1,0 +1,46 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>HUD • Top Bar</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Outfit:wght@400;800&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#22d3ee;--accent-2:#a78bfa;--ring:rgba(34,211,238,.55);--ring2:rgba(167,139,250,.45)}
+body{background:transparent;font-family:'Outfit',ui-sans-serif}
+#stage{width:1920px;height:120px}
+.card{border:1px solid rgba(148,163,184,.25);background:linear-gradient(180deg,rgba(0,10,20,.45),rgba(35,10,60,.35));backdrop-filter:blur(8px);box-shadow:0 0 0 1px rgba(148,163,184,.22) inset,0 6px 28px rgba(2,8,23,.35)}
+.pulse-dot{box-shadow:0 0 0 0 rgba(239,68,68,.7);animation:p 1.6s infinite}@keyframes p{100%{box-shadow:0 0 0 16px rgba(239,68,68,0)}}
+.hud{ text-shadow:0 0 12px rgba(34,211,238,.45),0 0 24px rgba(34,211,238,.2) }
+</style>
+</head><body>
+<div id="stage" class="relative">
+  <div class="absolute inset-x-0 top-0 mx-8 mt-4 flex items-center justify-between rounded-2xl card px-6 py-3">
+    <div class="flex items-center gap-3">
+      <span class="relative inline-flex items-center gap-2 rounded-full bg-red-500/20 px-4 py-1.5 border border-red-400/50">
+        <span class="w-2.5 h-2.5 rounded-full bg-red-500 pulse-dot"></span>
+        <span class="font-extrabold tracking-[0.3em]">LIVE</span>
+      </span>
+      <span class="text-sm text-cyan-200/90">Viewers: <span id="v">1,264</span></span>
+    </div>
+    <h1 id="t" class="text-[20px] font-extrabold tracking-[0.22em] text-cyan-100 hud">SPACE STATION • COMMAND STREAM</h1>
+    <div class="text-right leading-tight">
+      <div id="clk" class="text-cyan-100/90 font-semibold hud text-[18px]">00:00:00</div>
+      <div class="text-[10px] text-slate-300/70"><span id="mode">UTC</span> <span id="date"></span></div>
+    </div>
+  </div>
+</div>
+<script>
+const q=new URLSearchParams(location.search);
+const t=document.getElementById('t'), v=document.getElementById('v'), clk=document.getElementById('clk'), dateEl=document.getElementById('date'), modeEl=document.getElementById('mode');
+if(q.get('title')) t.textContent=q.get('title');
+if(q.get('viewers')) v.textContent=Number(q.get('viewers')).toLocaleString();
+const ACC=q.get('accent')||'#22d3ee',ACC2=q.get('accent2')||'#a78bfa';
+document.documentElement.style.setProperty('--accent',ACC); document.documentElement.style.setProperty('--accent-2',ACC2);
+let mode=(q.get('clock')||'UTC').toUpperCase(); modeEl.textContent=mode;
+const pad=n=>String(n).padStart(2,'0');
+setInterval(()=>{
+  const d=new Date();
+  if(mode==='UTC'){ clk.textContent=`${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())}`; dateEl.textContent=`${d.getUTCFullYear()}-${pad(d.getUTCMonth()+1)}-${pad(d.getUTCDate())}`;}
+  else{ clk.textContent=`${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; dateEl.textContent=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;}
+},250);
+</script>
+</body></html>
