@@ -3,9 +3,9 @@
 <title>Chat Panel</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-:root{--accent:#22d3ee;--accent-2:#a78bfa}
-body{background:transparent}
-.card{border:1px solid rgba(148,163,184,.25);background:linear-gradient(180deg,rgba(0,10,20,.45),rgba(35,10,60,.35));backdrop-filter:blur(8px);box-shadow:0 0 0 1px rgba(148,163,184,.22) inset,0 6px 28px rgba(2,8,23,.35)}
+:root{--accent:#2522ee;--accent-2:#a78bfa}
+body{background:#000000}
+.card{border:1px solid rgba(148,163,184,.25);background:linear-gradient(180deg,rgba(95, 123, 245, 0.432),rgba(126, 1, 252, 0.486));backdrop-filter:blur(8px);box-shadow:0 0 0 1px rgba(148,163,184,.22) inset,0 6px 28px rgba(2, 8, 23, 0.5)}
 .noscroll::-webkit-scrollbar{display:none}.noscroll{-ms-overflow-style:none;scrollbar-width:none}
 #stage{width:460px;height:620px}
 </style></head><body>
@@ -24,7 +24,7 @@ document.getElementById('toggle').onclick=()=>{const b=document.getElementById('
 const demo = q.get('demo')!=='off';
 if(demo){
   const msgs=[{u:'MISSION',t:'Telemetry nominal.'},{u:'BOT',t:'Remember to hydrate.'},{u:'CHAT',t:'Salam dari Jakarta!'}];
-  const box=document.getElementById('box'); let i=0; setInterval(()=>{const m=msgs[i]; const row=document.createElement('div'); row.className='flex items-start gap-2'; row.innerHTML=`<span class="mt-1 w-1.5 h-1.5 rounded-full" style="background:linear-gradient(90deg, var(--accent), var(--accent-2))"></span><div><div class="text-[11px] text-cyan-200/90">${m.u}</div><div class="text-xs text-slate-200/90">${m.t}</div></div>`; box.appendChild(row); box.scrollTop=box.scrollHeight; i=(i+1)%msgs.length;},1800);
+  const box=document.getElementById('box'); let i=0; setInterval(()=>{const m=msgs[i]; const row=document.createElement('div'); row.className='flex items-start gap-2'; row.innerHTML=`<span class="mt-1 w-1.5 h-1.5 rounded-full" style="background:linear-gradient(90deg, var(--accent), var(--accent-2))"></span><div><div class="text-[11px] text-neutral-300">${m.u}</div><div class="text-xs text-slate-200/90">${m.t}</div></div>`; box.appendChild(row); box.scrollTop=box.scrollHeight; i=(i+1)%msgs.length;},1800);
 }
 </script>
 </body></html>
