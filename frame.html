@@ -1,23 +1,73 @@
 <!DOCTYPE html><html><head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Cam Frame</title>
+<title>Cam Frame 720p</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-:root{--accent:#22d3ee;--accent-2:#a78bfa;--ring:rgba(34,211,238,.55);--ring2:rgba(167,139,250,.45);--ringS:rgba(34,211,238,.2)}
-html,body{height:100%} body{background:transparent}
-#frame{position:absolute;inset:0;border:2px solid var(--ring);border-radius:28px;
-  box-shadow:0 0 32px var(--ringS),0 0 6px var(--ring),inset 0 0 0 1px var(--ring2);
-  background:linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.18))}
-#frame:before,#frame:after{content:"";position:absolute;width:120px;height:120px;border-radius:24px;border:3px solid transparent;filter:drop-shadow(0 0 16px var(--ring))}
-#frame:before{left:-6px;top:-6px;border-top-color:var(--accent);border-left-color:var(--accent-2)}
-#frame:after{right:-6px;bottom:-6px;border-right-color:var(--accent);border-bottom-color:var(--accent-2)}
-</style></head><body>
-<div id="frame"></div>
+:root{
+  --accent:#22d3ee; --accent-2:#a78bfa;
+  --ring:rgba(34,211,238,.55); --ring2:rgba(167,139,250,.45); --ringS:rgba(34,211,238,.2)
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:transparent}
+body{display:grid;place-items:center}
+
+/* STAGE 720p */
+#stage{
+  width:1280px; height:720px; 
+  /* kalau mau lihat batas 720p, aktifkan garis halus:
+  outline:1px dashed rgba(148,163,184,.35);
+  */
+}
+
+/* FRAME sedikit mengecil (inset margin m) */
+#frame{
+  position:absolute; inset:var(--m,16px);
+  border:2px solid var(--ring); border-radius:var(--r,28px);
+  box-shadow:0 0 32px var(--ringS),0 0 6px var(--ring), inset 0 0 0 1px var(--ring2);
+  background:linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.18));
+}
+#frame:before,#frame:after{
+  content:""; position:absolute; width:120px; height:120px; border-radius:24px;
+  border:3px solid transparent; filter:drop-shadow(0 0 16px var(--ring))
+}
+#frame:before{left:-6px; top:-6px; border-top-color:var(--accent); border-left-color:var(--accent-2)}
+#frame:after{right:-6px; bottom:-6px; border-right-color:var(--accent); border-bottom-color:var(--accent-2)}
+
+/* OPSIONAL: auto-scale agar pas di browser apa pun (tidak perlu untuk OBS yang fixed 1280x720) */
+/* .auto-scale{transform-origin:top left} */
+</style>
+</head><body>
+
+<div id="stage" class="auto-scale">
+  <div id="frame"></div>
+</div>
+
 <script>
 const q=new URLSearchParams(location.search);
+
+// Aksen & radius
 document.documentElement.style.setProperty('--accent', q.get('accent')||'#22d3ee');
 document.documentElement.style.setProperty('--accent-2', q.get('accent2')||'#a78bfa');
 const r = parseInt(q.get('radius')||'28',10);
-document.getElementById('frame').style.borderRadius = r+'px';
+document.documentElement.style.setProperty('--r', r+'px');
+
+// Margin (mengecil dari tepi)
+const m = parseInt(q.get('m')||'16',10); // contoh: ?m=24
+document.documentElement.style.setProperty('--m', m+'px');
+
+// OPSIONAL: autoscale agar 1280x720 tetap proporsional di viewport
+(function autoScale(){
+  const stage = document.getElementById('stage');
+  const useScale = (q.get('scale')||'on') !== 'off'; // matikan dengan ?scale=off
+  if(!useScale) return;
+  function fit(){
+    const W = 1280, H = 720;
+    const sw = window.innerWidth, sh = window.innerHeight;
+    const s = Math.min(sw/W, sh/H);
+    stage.style.transform = `scale(${s})`;
+  }
+  window.addEventListener('resize', fit, {passive:true});
+  fit();
+})();
 </script>
 </body></html>
