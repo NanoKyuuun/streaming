@@ -29,18 +29,74 @@ body{background:transparent;font-family:'Outfit',ui-sans-serif}
   </div>
 </div>
 <script>
-const q=new URLSearchParams(location.search);
-const t=document.getElementById('t'), v=document.getElementById('v'), clk=document.getElementById('clk'), dateEl=document.getElementById('date'), modeEl=document.getElementById('mode');
-if(q.get('title')) t.textContent=q.get('title');
-if(q.get('viewers')) v.textContent=Number(q.get('viewers')).toLocaleString();
-const ACC=q.get('accent')||'#22d3ee',ACC2=q.get('accent2')||'#a78bfa';
-document.documentElement.style.setProperty('--accent',ACC); document.documentElement.style.setProperty('--accent-2',ACC2);
-let mode=(q.get('clock')||'UTC').toUpperCase(); modeEl.textContent=mode;
-const pad=n=>String(n).padStart(2,'0');
-setInterval(()=>{
-  const d=new Date();
-  if(mode==='UTC'){ clk.textContent=`${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())}`; dateEl.textContent=`${d.getUTCFullYear()}-${pad(d.getUTCMonth()+1)}-${pad(d.getUTCDate())}`;}
-  else{ clk.textContent=`${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; dateEl.textContent=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;}
-},250);
+const q = new URLSearchParams(location.search);
+const t = document.getElementById('t'),
+      v = document.getElementById('v'),
+      clk = document.getElementById('clk'),
+      dateEl = document.getElementById('date'),
+      modeEl = document.getElementById('mode');
+
+if (q.get('title')) t.textContent = q.get('title');
+if (q.get('viewers')) v.textContent = Number(q.get('viewers')).toLocaleString();
+
+// warna aksen
+const ACC = q.get('accent') || '#22d3ee';
+const ACC2 = q.get('accent2') || '#a78bfa';
+document.documentElement.style.setProperty('--accent', ACC);
+document.documentElement.style.setProperty('--accent-2', ACC2);
+
+// mode jam: PRIORITAS => tz (IANA) > clock (LOCAL/UTC) > default LOCAL
+const tzParam = q.get('tz'); // contoh: Asia/Jakarta
+const clockParam = (q.get('clock') || '').toUpperCase();
+const useUTC = clockParam === 'UTC';
+const useLOCAL = clockParam === 'LOCAL' || (!tzParam && !useUTC);
+
+let labelMode;
+let fmt;
+if (tzParam) {
+  labelMode = tzParam;
+  fmt = new Intl.DateTimeFormat(undefined, {
+    hour12: false, timeZone: tzParam,
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit'
+  });
+} else if (useUTC) {
+  labelMode = 'UTC';
+  fmt = new Intl.DateTimeFormat(undefined, {
+    hour12: false, timeZone: 'UTC',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit'
+  });
+} else {
+  labelMode = 'LOCAL';
+  fmt = new Intl.DateTimeFormat(undefined, {
+    hour12: false,
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit'
+  });
+}
+modeEl.textContent = labelMode;
+
+function partsToObj(parts){
+  const o = {};
+  for (const p of parts) o[p.type] = p.value;
+  return o;
+}
+function render() {
+  const parts = fmt.formatToParts(new Date());
+  const o = partsToObj(parts);
+  // o.month/day bisa "01" dst.
+  clk.textContent = `${o.hour}:${o.minute}:${o.second}`;
+  dateEl.textContent = `${o.year}-${o.month}-${o.day}`;
+}
+
+// sinkron ke detik tanpa drift
+(function tick() {
+  render();
+  const now = Date.now();
+  const delay = 1000 - (now % 1000);
+  setTimeout(tick, delay);
+})();
 </script>
+
 </body></html>
