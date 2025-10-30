@@ -1,0 +1,1022 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+SC&family=Noto+Sans+JP&family=Nunito&display=swap");
+
+        body
+        {                
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        #main-container
+        {
+            --text-color: rgb(255, 255, 255);
+            --background-color: rgb(0, 0, 0);
+            --accent-color: yellow;
+            --font-family: "Nunito", "Noto Sans JP", "Noto Sans SC", sans-serif;
+            --font-family-label: "Nunito", "Noto Sans JP", "Noto Sans SC", sans-serif;
+            --font-weight: 500;
+            --font-weight-label: 400;
+            --border-radius: 40px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+
+            box-sizing: border-box;
+            width: fit-content;
+            height: fit-content;            
+            padding: 2px 16px;
+            border-radius: var(--border-radius);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            text-align: center;
+            font-family: var(--font-family);
+            font-weight: var(--font-weight);
+
+            overflow: hidden;
+
+            /* transform: scale(2);
+            transform-origin: top left; */
+        }
+
+        #main-container[data-alignvertical="top"]
+        {
+            border-top-left-radius: 0px;
+            border-top-right-radius: 0px;
+        }
+        #main-container[data-alignvertical="bottom"]
+        {
+            border-bottom-left-radius: 0px;
+            border-bottom-right-radius: 0px;
+        }
+        #main-container[data-alignhorizontal="left"]
+        {
+            border-top-left-radius: 0px;
+            border-bottom-left-radius: 0px;
+        }
+        #main-container[data-alignhorizontal="right"]
+        {
+            border-top-right-radius: 0px;
+            border-bottom-right-radius: 0px;
+        }
+
+        .accent
+        {
+            color: var(--accent-color);
+        }
+
+        .svg-fill
+        {
+            fill: var(--text-color);
+        }
+
+        #clock
+        {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 4px 24px;
+            --clock-size: 64px;
+            --border-width: 4px;
+            --clock-hour-size: 4px;
+            --clock-minute-size: 4px;
+            --clock-second-size: 2px;
+            --clock-center-size: 4px;
+            --overflow: 4px;
+
+            --separator: attr(data-separator,":");
+        }
+
+        #clock-icon
+        {
+            margin-right: 0.5em;
+            margin-top: calc(-0.15em + var(--clock-adjust));
+        }
+
+        #analog-clock-body
+        {
+            display: block;
+            position: relative;
+            box-sizing: border-box;
+
+            width: var(--clock-size);
+            height: var(--clock-size);
+            
+            border: var(--border-width) solid var(--text-color);
+            border-radius: 999px;
+        }
+
+        .analog-clock-hand
+        {
+            display: block;
+            position: absolute;
+            box-sizing: border-box;
+            border-radius: 999px;
+            width: var(--hand-size);
+
+            bottom: calc(50% - (var(--hand-size, 0) / 2));
+            left: calc(50% - (var(--hand-size, 0) / 2));
+
+            transform-origin: calc(var(--hand-size) / 2) calc(100% - var(--hand-size) / 2);
+        }
+
+        #analog-clock-hour
+        {
+            --hand-size: var(--clock-hour-size);
+            height: calc(var(--clock-size) * 0.6 / 2);
+            background-color: var(--text-color);
+        }
+
+        #analog-clock-minute
+        {
+            --hand-size: var(--clock-minute-size);
+            height: calc(var(--clock-size) * 0.8 / 2);
+            background-color: var(--text-color);
+        }
+
+        #analog-clock-second
+        {
+            --hand-size: var(--clock-second-size);
+            height: calc((var(--clock-size) - var(--border-width)) * 0.9 / 2 + var(--overflow));
+            background-color: var(--accent-color);                
+             
+            bottom: calc(50% - (var(--hand-size, 0) / 2) - var(--overflow));
+            transform-origin: calc(var(--hand-size) / 2) calc(100% - var(--hand-size) / 2 - var(--overflow)); 
+        }
+        #analog-clock-center
+        {
+            --hand-size: var(--clock-center-size);
+            height: var(--clock-center-size);
+            background-color: var(--accent-color);  
+        }
+        
+
+        #clock-text
+        {
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+            min-width: 200px;
+            font-size: 72px;
+            letter-spacing: 0.05em;
+            line-height: 1.6;
+        }
+
+        #clock-text-separator
+        {
+            
+        }
+        
+        #clock[data-separator="none"] #clock-text-separator
+        {
+
+        }
+
+        #clock[data-separator="beat"] #clock-text-separator
+        {                
+            animation: separator-beat 1s var(--seconds-delay,0ms) linear infinite;
+        }
+
+        #clock[data-separator="breath"] #clock-text-separator
+        {                
+            animation: separator-breath 2s var(--seconds-delay,0ms) linear infinite;
+        }
+
+        #clock[data-separator="tick"] #clock-text-separator
+        {
+            animation: separator-tick 1s var(--seconds-delay,0ms) step-end infinite;
+        }
+
+        #clock-text-ampm
+        {
+            font-size: 36px;
+            margin-left: 0.2em;
+        }
+
+        #clock-text-ampm:empty
+        {
+            display: none;
+        }
+
+        #clock[data-hoursystem="24"] #clock-text-ampm
+        {
+            display: none;
+        } 
+
+        @keyframes separator-beat {
+            0%, 10%
+            {
+                opacity: 1;
+            }
+            100%
+            {
+                opacity: 0.6;
+            }
+        }
+        @keyframes separator-breath {
+            0%, 100%
+            {
+                opacity: 0.6;
+            }
+            50%
+            {
+                opacity: 1;
+            }
+        }
+        @keyframes separator-tick {
+            0%, 100%
+            {
+                opacity: 1;
+            }
+            50%
+            {
+                opacity: 0.6;
+            }
+        }
+
+        #rotator-container
+        {
+            font-size: 32px;
+            --label-height: 48px;
+            margin-top: -20px;
+            padding-bottom: 52px;
+            margin-bottom: -32px;
+        }
+
+        #rotator
+        {
+            display: flex;
+            flex-direction: column-reverse;
+            height: var(--label-height);
+            box-sizing: border-box;
+            align-content: center;
+
+            font-family: var(--font-family-label);
+            font-weight: var(--font-weight-label);
+            --timing: cubic-bezier(.65,0.05,0,0.95);
+            --duration: 1600ms;
+            --duration-fade: 400ms;
+            --duration-none: 0ms;
+        }
+
+        #rotator[data-direction="down"]
+        {                
+            flex-direction: column-reverse;
+        }
+        #rotator[data-direction="up"]
+        {                
+            flex-direction: column;
+        }
+
+        #rotator[data-direction="fade"]
+        {                
+            flex-direction: column-reverse;
+        }
+        #rotator[data-direction="none"]
+        {                
+            flex-direction: column-reverse;
+        }
+
+        .rotator-element
+        {
+            box-sizing: border-box;
+            flex: 0 0 var(--label-height);
+            display: flex;
+            height: var(--label-height);
+            letter-spacing: 0.05em;
+            padding: 0.1em 1em;
+            
+            justify-content: center;
+            align-items: center;
+        }
+
+        #rotator.animate
+        {
+            animation-duration: var(--duration);
+            animation-timing-function: var(--timing);
+            animation-fill-mode: forwards;
+        }
+
+        #rotator[data-direction="down"].animate
+        {                
+            animation-name: label-rotate-down;
+        }
+        #rotator[data-direction="up"].animate
+        {                
+            animation-name: label-rotate-up;
+        }
+
+        #rotator[data-direction="fade"].animate
+        {                
+            animation-name: label-rotate-fade;
+            animation-timing-function: ease-out;
+            animation-duration: var(--duration-fade);                
+            --duration: var(--duration-fade);
+        }
+        #rotator .rotator-element:first-of-type
+        {
+            opacity: 1;
+        }
+
+        #rotator .rotator-element + .rotator-element
+        {
+            opacity: 0;
+        }
+
+        #rotator.animate .rotator-element:first-of-type
+        {
+            animation: label-hide var(--duration) var(--timing)  both;
+        }
+        #rotator.animate .rotator-element:nth-of-type(2)
+        {
+            animation: label-show var(--duration) var(--timing)  both;
+        }
+
+        #rotator[data-direction="none"].animate .rotator-element:first-of-type
+        {
+            animation: none;
+        }
+        #rotator[data-direction="none"].animate .rotator-element:nth-of-type(2)
+        {
+            animation: none;
+        }
+
+        #rotator[data-direction="fade"].animate .rotator-element:first-of-type
+        {
+            animation: label-show-fade var(--duration-fade) linear both;
+        }
+        #rotator[data-direction="fade"].animate .rotator-element:nth-of-type(2)
+        {
+            animation: label-hide-fade var(--duration-fade) linear both;
+        }
+
+        #rotator[data-direction="fade"] .rotator-element:first-of-type
+        {
+            opacity: 1;
+            transition: opacity var(--duration-fade) ease-out;
+        }
+
+        #rotator[data-direction="fade"] .rotator-element + .rotator-element
+        {
+            opacity: 0;
+            margin-bottom: calc(-1 * var(--label-height));
+        }
+
+        
+        @keyframes label-rotate-down {
+            0%
+            {
+                transform: translateY(0);
+            }
+            100%
+            {                    
+                transform: translateY(calc(1 * var(--label-height)));
+            }
+        }
+        @keyframes label-rotate-up {
+            0%
+            {
+                transform: translateY(0);
+            }
+            100%
+            {                    
+                transform: translateY(calc(-1 * var(--label-height)));
+            }
+        }
+        @keyframes label-rotate-fade {
+            0%
+            {  
+                opacity: 1;                                   
+            }
+            100%
+            {    
+                opacity: 0;                   
+            }
+        }
+        @keyframes label-rotate-none {
+            0%
+            {
+                transform: translateY(0);                     
+            }
+            100%
+            {                     
+                transform: translateY(calc(1 * var(--label-height)));
+            }
+        }
+        @keyframes label-show {
+            0%, 25%
+            {
+                opacity: 0;
+            }
+            100%, 60%
+            {                    
+                opacity: 1;
+            }
+        }
+        @keyframes label-hide {
+            0%, 25%
+            {
+                opacity: 1;
+            }
+            50%, 100%
+            {                    
+                opacity: 0;
+            }
+        }
+
+        .rotator-element
+        {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            --icon-size: 32px;
+            --font-size: 28px;
+            font-size: var(--font-size);
+            max-width: 100%;
+        }
+
+        .rotator-icon
+        {
+            // width: var(--icon-size);
+            // height: var(--icon-size);
+            font-size: var(--font-size);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.25em;
+            letter-spacing: 0.1em;
+            margin-top: calc(0.1em + 0.25 * ( var(--font-size) - var(--icon-size)));
+        }
+
+        .rotator-icon:has(img[src=""])
+        {
+            display: none;
+        }
+
+        img[src=""]
+        {
+            display: none;
+        }
+
+        .rotator-icon img
+        {
+            width: 100%;
+            height: 100%;
+        }
+
+        .rotator-text
+        {
+            display: block;
+            line-height: 2;
+            letter-spacing: 0.1em;
+            flex-shrink: 1;
+            flex-grow: 0;
+            white-space: nowrap;
+        }
+
+
+        .icon-twitch
+        {
+            width: 30px;
+            height: 30px;
+        }
+
+        .icon-youtube
+        {
+            width: 32px;
+            height: 32px;
+            margin-right: 2px;
+        }
+
+        .icon-x
+        {
+            width: 24px;
+            height: 24px;
+            margin-right: -2px;
+        }
+
+        .icon-twitter
+        {
+            width: 32px;
+            height: 32px;
+            margin-right: -2px;
+        }
+
+        .icon-tiktok
+        {
+            width: 30px;
+            height: 30px;
+            margin-right: -2px;
+        }
+
+        .icon-facebook
+        {
+            width: 28px;
+            height: 28px;
+        }
+
+        .icon-instagram
+        {
+            width: 28px;
+            height: 28px;
+        }
+
+    </style>
+    <script>
+const ICON_TWITCH = '<svg class="icon-twitch" width="64" height="64" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 2400 2800" style=";enable-background:new 0 0 2400 2800;" xml:space="preserve"><title>Asset 3</title><g><g id="Layer_1-2"><path class="svg-fill" d="M500,0L0,500v1800h600v500l500-500h400l900-900V0H500z M2200,1300l-400,400h-400l-350,350v-350H600V200h1600V1300z"/><rect x="1700" y="550" class="svg-fill" width="200" height="600"/><rect x="1150" y="550" class="svg-fill" width="200" height="600"/></g></g></svg>';
+const ICON_YOUTUBE = '<svg class="icon-youtube" width="64" height="64" viewBox="0 0 122 86" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g transform="matrix(1,0,0,1,-84.5495,-85.039)"><g transform="matrix(1,0,0,1,133.143,109.336)"><path class="svg-fill" d="M0,36.446L0,0L31.562,18.223L0,36.446ZM70.353,-11.018C68.955,-16.244 64.839,-20.361 59.612,-21.758C50.138,-24.297 12.148,-24.297 12.148,-24.297C12.148,-24.297 -25.841,-24.297 -35.315,-21.758C-40.542,-20.361 -44.658,-16.244 -46.055,-11.018C-48.594,-1.544 -48.594,18.223 -48.594,18.223C-48.594,18.223 -48.594,37.99 -46.055,47.464C-44.658,52.69 -40.542,56.807 -35.315,58.204C-25.841,60.743 12.148,60.743 12.148,60.743C12.148,60.743 50.138,60.743 59.612,58.204C64.839,56.807 68.955,52.69 70.353,47.464C72.891,37.99 72.891,18.223 72.891,18.223C72.891,18.223 72.891,-1.544 70.353,-11.018"/></g></g></svg>'
+const ICON_TWITTER = '<svg class="icon-twitter"  width="64" height="64" version="1.1" id="Logo" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 248 204" style="enable-background:new 0 0 248 204;" xml:space="preserve"><g id="Logo_1_"><path id="white_background" class="svg-fill" d="M221.95,51.29c0.15,2.17,0.15,4.34,0.15,6.53c0,66.73-50.8,143.69-143.69,143.69v-0.04C50.97,201.51,24.1,193.65,1,178.83c3.99,0.48,8,0.72,12.02,0.73c22.74,0.02,44.83-7.61,62.72-21.66c-21.61-0.41-40.56-14.5-47.18-35.07c7.57,1.46,15.37,1.16,22.8-0.87C27.8,117.2,10.85,96.5,10.85,72.46c0-0.22,0-0.43,0-0.64c7.02,3.91,14.88,6.08,22.92,6.32C11.58,63.31,4.74,33.79,18.14,10.71c25.64,31.55,63.47,50.73,104.08,52.76c-4.07-17.54,1.49-35.92,14.61-48.25c20.34-19.12,52.33-18.14,71.45,2.19c11.31-2.23,22.15-6.38,32.07-12.26c-3.77,11.69-11.66,21.62-22.2,27.93c10.01-1.18,19.79-3.86,29-7.95C240.37,35.29,231.83,44.14,221.95,51.29z"/></g></svg>';
+const ICON_X = '<svg class="icon-x" width="64" height="64" viewBox="0 0 1200 1227" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><path class="svg-fill" d="M714.163,519.284L1160.89,0L1055.03,0L667.137,450.887L357.328,0L0,0L468.492,681.821L0,1226.37L105.866,1226.37L515.491,750.218L842.672,1226.37L1200,1226.37L714.137,519.284L714.163,519.284ZM569.165,687.828L521.697,619.934L144.011,79.694L306.615,79.694L611.412,515.685L658.88,583.579L1055.08,1150.3L892.476,1150.3L569.165,687.854L569.165,687.828Z" /></svg>';
+const ICON_INSTAGRAM = '<svg class="icon-instagram"  width="64" height="64" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs></defs><path class="svg-fill" d="M295.42,6c-53.2,2.51-89.53,11-121.29,23.48-32.87,12.81-60.73,30-88.45,57.82S40.89,143,28.17,175.92c-12.31,31.83-20.65,68.19-23,121.42S2.3,367.68,2.56,503.46,3.42,656.26,6,709.6c2.54,53.19,11,89.51,23.48,121.28,12.83,32.87,30,60.72,57.83,88.45S143,964.09,176,976.83c31.8,12.29,68.17,20.67,121.39,23s70.35,2.87,206.09,2.61,152.83-.86,206.16-3.39S799.1,988,830.88,975.58c32.87-12.86,60.74-30,88.45-57.84S964.1,862,976.81,829.06c12.32-31.8,20.69-68.17,23-121.35,2.33-53.37,2.88-70.41,2.62-206.17s-.87-152.78-3.4-206.1-11-89.53-23.47-121.32c-12.85-32.87-30-60.7-57.82-88.45S862,40.87,829.07,28.19c-31.82-12.31-68.17-20.7-121.39-23S637.33,2.3,501.54,2.56,348.75,3.4,295.42,6m5.84,903.88c-48.75-2.12-75.22-10.22-92.86-17-23.36-9-40-19.88-57.58-37.29s-28.38-34.11-37.5-57.42c-6.85-17.64-15.1-44.08-17.38-92.83-2.48-52.69-3-68.51-3.29-202s.22-149.29,2.53-202c2.08-48.71,10.23-75.21,17-92.84,9-23.39,19.84-40,37.29-57.57s34.1-28.39,57.43-37.51c17.62-6.88,44.06-15.06,92.79-17.38,52.73-2.5,68.53-3,202-3.29s149.31.21,202.06,2.53c48.71,2.12,75.22,10.19,92.83,17,23.37,9,40,19.81,57.57,37.29s28.4,34.07,37.52,57.45c6.89,17.57,15.07,44,17.37,92.76,2.51,52.73,3.08,68.54,3.32,202s-.23,149.31-2.54,202c-2.13,48.75-10.21,75.23-17,92.89-9,23.35-19.85,40-37.31,57.56s-34.09,28.38-57.43,37.5c-17.6,6.87-44.07,15.07-92.76,17.39-52.73,2.48-68.53,3-202.05,3.29s-149.27-.25-202-2.53m407.6-674.61a60,60,0,1,0,59.88-60.1,60,60,0,0,0-59.88,60.1M245.77,503c.28,141.8,115.44,256.49,257.21,256.22S759.52,643.8,759.25,502,643.79,245.48,502,245.76,245.5,361.22,245.77,503m90.06-.18a166.67,166.67,0,1,1,167,166.34,166.65,166.65,0,0,1-167-166.34" transform="translate(-2.5 -2.5)"/></svg>';
+const ICON_FACEBOOK = '<svg class="icon-facebook"  width="64" height="64" viewBox="0 0 4267 4267" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g transform="matrix(4.16667,0,0,4.16667,0,0)"> <path class="svg-fill" d="M1024,512C1024,229.23 794.77,0 512,0C229.23,0 0,229.23 0,512C0,767.554 187.231,979.37 432,1017.78L432,660L302,660L302,512L432,512L432,399.2C432,270.88 508.438,200 625.39,200C681.407,200 740,210 740,210L740,336L675.438,336C611.835,336 592,375.467 592,415.957L592,512L734,512L711.3,660L592,660L592,1017.78C836.769,979.37 1024,767.554 1024,512Z"/></g></svg>';
+const ICON_TIKTOK = '<svg  class="icon-tiktok" width="64" height="64" viewBox="0 0 16 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/"><g transform="matrix(1,0,0,1,-43.187,-13.1093)"><g transform="matrix(1,0,0,1,26.963,1.0788)"><path class="svg-fill" d="M25.517,25.058C25.465,26.43 24.309,27.531 22.893,27.531C22.569,27.531 22.259,27.473 21.973,27.368C22.259,27.473 22.569,27.531 22.893,27.531C24.309,27.531 25.465,26.43 25.517,25.058L25.522,12.806L27.812,12.806C28.033,13.971 28.741,14.97 29.721,15.595C29.721,15.595 29.721,15.596 29.722,15.596C30.404,16.031 31.217,16.284 32.09,16.284L32.09,16.965L32.09,16.965L32.09,19.341C30.468,19.341 28.965,18.833 27.739,17.973L27.739,24.185C27.739,27.288 25.156,29.812 21.981,29.812C20.755,29.812 19.617,29.434 18.682,28.792C18.681,28.792 18.681,28.791 18.68,28.791C17.196,27.772 16.224,26.088 16.224,24.185C16.224,21.082 18.807,18.558 21.981,18.558C22.245,18.558 22.503,18.579 22.757,18.613L22.757,19.337C19.861,19.403 17.487,21.568 17.171,24.333C17.487,21.569 19.861,19.404 22.757,19.338L22.757,21.734C22.512,21.659 22.252,21.615 21.981,21.615C20.531,21.615 19.352,22.768 19.352,24.185C19.352,25.172 19.925,26.029 20.762,26.46L20.762,26.46C21.127,26.647 21.541,26.755 21.981,26.755C23.398,26.755 24.553,25.654 24.606,24.282L24.61,12.031L27.738,12.031C27.738,12.296 27.765,12.555 27.812,12.806L25.522,12.806L25.517,25.058Z"/></g></g></svg>';
+
+            const MONTH_NAMES= ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            const MONTH_NAMES_SHORT= ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const DAY_NAMES_SHORT=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+            const DAY_NAMES=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+            const DAY_NAMES_JP = ["日","月","火","水","木","金","土"];
+            const ICON_MAP = new Map();
+                        
+                                    
+            ICON_MAP.set("twitch", ICON_TWITCH);
+            ICON_MAP.set("twitter", ICON_TWITTER);
+            ICON_MAP.set("youtube", ICON_YOUTUBE);
+            ICON_MAP.set("x", ICON_X);
+            ICON_MAP.set("tiktok", ICON_TIKTOK);
+            ICON_MAP.set("facebook", ICON_FACEBOOK);
+            ICON_MAP.set("instagram", ICON_INSTAGRAM);
+
+        let prevHour = -1;
+        let prevMinute = -1;
+        let prevSecond = -1;
+        let prevAmpm = "";
+        let prevDate = -1;
+        let useMs = false;
+
+        let prevTimestamp = 0, prevClockTimestamp = 0;
+
+        let dateM, dateML, dateMonth, dateD, dateDL, dateDJp, dateDate;
+
+        //define mode later
+        //12/24hour
+
+        let hourMode = 24;
+        let labelRotationDuration = 2000;
+        let labelRotationDelay = 1800;
+
+        let labelRotationDelayFade = 400;
+        let labelRotationDelayNone = 200;
+        let labelRotationDelayDefault = 1800;
+
+        let labelRotationDelayMinimum = 200;
+
+        let labelTimeout;
+        let isTransitioning = false;
+
+        let settings = {
+            timestamp: -1,
+            colorBg: "#FFFFFFFF",
+            colorText: "#000000",
+            colorAccent: "#FF0000FF",
+            font: "",
+            fontWeight: 400,
+            borderRadius: 40,
+            borderAlign: "center",
+            analogDisplay: true,
+            secondHand: "tick",
+            separator: ".",
+            separatorAnimation: "beat",
+            hourMode: 24 
+        };
+
+        let labelSettings = {
+            timestamp: -1,
+            animation: "down",
+            dateFormat: "[[d]], [m] [date]",
+            dateDuration: 2,
+            dateDisplay: true,
+            font: "",
+            fontWeight: 400,
+
+            labels: []
+        };
+
+        
+        settings = {"timestamp":1758627387592,"colorBg":"#000000AD","colorText":"#FFFFFFFF","colorAccent":"#FF0000FF","font":"","fontWeight":"900","analogDisplay":true,"secondHand":"smooth","separator":":","separatorAnimation":"breath","hourMode":"24","borderRadius":"30","borderAlign":"center","clockAdjust":"0"};
+        labelSettings = {"timestamp":1758624934418,"animation":"fade","dateFormat":"[d], [m] [date]","dateDuration":5,"dateDisplay":true,"font":"","fontWeight":"900","labels":[{"icon":"instagram","text":"[@]kaitomiko14","duration":2.5},{"icon":"twitter","text":"[@]kaito_miko","duration":2.5},{"icon":"youtube","text":"[@]KaitoMiko","duration":2.5},{"icon":"tiktok","text":"[@]kaitomiko14","duration":2.5},{"icon":"none","text":"[#]ⓘError404","duration":2}]};
+    
+
+        const DEFAULT_FONT = '"Nunito", "Noto Sans JP", "Noto Sans SC", sans-serif';
+
+        function applySettings()
+        {
+            resetTime();
+
+            let container = document.getElementById("main-container");
+
+            
+            if(prevClockTimestamp != settings.timestamp)
+            {
+                prevClockTimestamp = settings.timestamp
+                    
+                container.style.setProperty("--background-color", settings.colorBg);
+                container.style.setProperty("--text-color", settings.colorText);
+                container.style.setProperty("--accent-color", settings.colorAccent);
+
+                container.style.setProperty("--border-radius", settings.borderRadius+"px");
+                container.style.setProperty("--clock-adjust", settings.clockAdjust+"px");
+                
+                let alignV = "center";
+                if(settings.borderAlign.includes("top"))
+                {
+                    alignV = "top";
+                }
+                else if(settings.borderAlign.includes("bottom"))
+                {
+                    alignV = "bottom"
+                }
+
+                let alignH = "center";
+                if(settings.borderAlign.includes("left"))
+                {
+                    alignH = "left";
+                }
+                else if(settings.borderAlign.includes("right"))
+                {
+                    alignH = "right"
+                }
+
+                container.dataset.alignvertical = alignV;
+                container.dataset.alignhorizontal = alignH;
+
+                let newFont = DEFAULT_FONT;
+                if(settings.font)
+                {
+                    newFont = '"'+settings.font+'", '+DEFAULT_FONT;
+                }
+
+                container.style.setProperty("--font-family", newFont);
+
+                container.style.setProperty("--font-weight", settings.fontWeight);
+
+                document.getElementById("clock-icon").style.display = (settings.analogDisplay?"block":"none");
+                document.getElementById("analog-clock-second").style.display = (settings.secondHand == "none"?"none":"block");
+                document.getElementById("analog-clock-center").style.display = (settings.secondHand == "none"?"none":"block");
+                useMs = settings.secondHand == "smooth";
+                document.getElementById("clock-text-separator").innerHTML = settings.separator;
+                document.getElementById("clock").dataset.separator = settings.separatorAnimation;
+                document.getElementById("clock").dataset.hoursystem = settings.hourMode;
+            
+            }
+
+            if(prevTimestamp == labelSettings.timestamp) return;
+
+            if(!labelSettings.dateDisplay && labelSettings.labels.length == 0)
+            {
+                document.getElementById("rotator-container").style.display = "none";
+            }
+            else 
+            {
+                document.getElementById("rotator-container").style.display = "block";
+            }
+
+            prevTimestamp = labelSettings.timestamp;
+            
+            document.getElementById("rotator").classList.remove("animate");  
+            clearLabels()
+
+            newFont = DEFAULT_FONT;
+            if(labelSettings.font)
+            {
+                newFont = '"'+labelSettings.font+'", '+DEFAULT_FONT;
+            }
+            container.style.setProperty("--font-family-label", newFont);
+            container.style.setProperty("--font-weight-label", labelSettings.fontWeight);
+            document.getElementById("rotator").dataset.direction = labelSettings.animation;
+
+            if(labelSettings.animation == "fade")
+            {
+                labelRotationDelay = labelRotationDelayFade;
+            }
+            else if(labelSettings.animation == "none")
+            {
+                labelRotationDelay = labelRotationDelayNone;
+            }
+            else
+            {
+                labelRotationDelay = labelRotationDelayDefault;
+            }
+            
+            if(labelSettings.dateDisplay)
+            {
+                createDateElement(labelSettings.dateFormat, labelSettings.dateDuration);
+            }
+
+            labelSettings.labels.forEach(label => {
+                if(!label) return;
+                createLabelElement(label.icon, label.text, label.duration);
+            });
+
+            let duration = parseInt(labelSettings.dateDuration);
+            if(!duration)
+            {
+                duration = labelRotationDelayDefault;
+            }
+            else
+            {
+                duration = duration * 1000;
+            }
+
+            if(labelTimeout)
+            {
+                clearTimeout(labelTimeout);
+            }
+            labelTimeout = setTimeout(updateLabel, duration);
+
+        }
+
+        function resetTime()
+        {
+            prevSecond = -1;
+            prevMinute = -1;
+            prevHour = -1;
+            prevDate = -1;
+            prevAmpm = "--";
+
+            hourMode = (settings.hourMode?settings.hourMode:24);
+
+        }
+
+        function clearLabels()
+        {
+            document.getElementById("rotator").innerHTML = "";
+        }
+
+        function createDateElement(dateFormat, dateDuration)
+        {
+            let text = dateFormat;
+
+            text = text.replaceAll("[m]","<span id='date-m'></span>");
+            text = text.replaceAll("[M]","<span id='date-M'></span>");
+            text = text.replaceAll("[month]","<span id='date-month'></span>");
+            text = text.replaceAll("[djp]","<span id='date-djp'></span>");
+            text = text.replaceAll("[d]","<span id='date-d'></span>");
+            text = text.replaceAll("[D]","<span id='date-D'></span>");
+            text = text.replaceAll("[date]","<span id='date-date'></span>");         
+                                    
+            text = text.replaceAll("[","<span class='accent'>");
+            text = text.replaceAll("]","</span>");
+            
+            let elem = '<div id="date-label" class="rotator-element" data-duration="'+(parseFloat(dateDuration) * 1000)+'"><div class="rotator-text">'+text+'</div></div>';
+            
+
+            document.getElementById("rotator").insertAdjacentHTML('beforeend', elem);
+
+            prevDate = -1;
+            dateM = document.getElementById("date-m")
+            dateMonth = document.getElementById("date-month")
+            dateML = document.getElementById("date-M")
+            dateD = document.getElementById("date-d")
+            dateDL = document.getElementById("date-D")
+            dateDJp = document.getElementById("date-djp")
+            dateDate = document.getElementById("date-date")
+
+            
+            let currDate = new Date();
+            if(dateM) dateM.innerHTML = MONTH_NAMES_SHORT[currDate.getMonth()];
+            if(dateMonth) dateMonth.innerHTML = (currDate.getMonth() + 1);
+            if(dateML) dateML.innerHTML = MONTH_NAMES[currDate.getMonth()];
+            if(dateD) dateD.innerHTML = DAY_NAMES_SHORT[currDate.getDay()];
+            if(dateDL) dateDL.innerHTML = DAY_NAMES[currDate.getDay()];
+            if(dateDJp) dateDJp.innerHTML = DAY_NAMES_JP[currDate.getDay()];
+            if(dateDate) dateDate.innerHTML = currDate.getDate();
+            
+        }
+
+        function createLabelElement(icon, text, duration)
+        {
+            if(!text)return;
+
+            let svg = ICON_MAP.get(icon);
+            if(svg)
+            {
+                icon = '<div class="rotator-icon">'+svg+'</div>';
+            }
+            else
+            {
+                icon = '';
+            }
+
+
+            text = text.replaceAll("[","<span class='accent'>");
+            text = text.replaceAll("]","</span>");
+
+            let elem = '<div class="rotator-element" data-duration="'+(parseFloat(duration) * 1000)+'">'+icon+'<div class="rotator-text">'+text+'</div></div>';
+
+            document.getElementById("rotator").insertAdjacentHTML('beforeend', elem);
+        }
+
+        function updateTime()
+        {
+            let currDate = new Date();
+            
+            let hour = currDate.getHours();
+            let minute = currDate.getMinutes();
+            let second = currDate.getSeconds();
+            let ms = currDate.getMilliseconds();
+            let d = currDate.getDate();
+            let ampm = "";                
+            ampm = (hour>=12?"PM":"AM");
+
+            if(settings.analogDisplay)
+            {
+                let hourDeg = ((hour % 12) + (minute)/60) * 30;
+                let minuteDeg = (minute + (second)/60) * 6;
+                let secondDeg = (second + (useMs?ms/1000:0)) * 6;
+                
+                document.getElementById("analog-clock-second").style.transform = "rotate("+secondDeg+"deg)";
+                document.getElementById("analog-clock-minute").style.transform = "rotate("+minuteDeg+"deg)";
+                document.getElementById("analog-clock-hour").style.transform = "rotate("+hourDeg+"deg)";
+            }
+
+            if(prevSecond==second) return
+            
+            prevSecond = second;
+
+            if(prevMinute==minute) return
+
+            prevMinute = minute;
+            document.getElementById("clock-text-minute").innerHTML = toTwoDigit(minute);
+
+            if(prevHour==toHour(hour)) return
+            
+            prevHour = toHour(hour);
+            document.getElementById("clock-text-hour").innerHTML = toTwoDigit(toHour(hour));
+
+            if(prevAmpm == ampm) return
+            
+            prevAmpm = ampm;
+            document.getElementById("clock-text-ampm").innerHTML = ampm;
+            
+            if(prevDate == d) return
+            
+            prevDate = d;
+            if(dateM) dateM.innerHTML = MONTH_NAMES_SHORT[currDate.getMonth()];
+            if(dateMonth) dateMonth.innerHTML = (currDate.getMonth() + 1);
+            if(dateML) dateML.innerHTML = MONTH_NAMES[currDate.getMonth()];
+            if(dateD) dateD.innerHTML = DAY_NAMES_SHORT[currDate.getDay()];
+            if(dateDL) dateDL.innerHTML = DAY_NAMES[currDate.getDay()];
+            if(dateDJp) dateDJp.innerHTML = DAY_NAMES_JP[currDate.getDay()];
+            if(dateDate) dateDate.innerHTML = currDate.getDate();
+            
+        }
+
+        function toHour(num)
+        {
+            if(hourMode==24) return num;
+            let h = (num%12);
+            if(h==0) return 12;
+            else return h;
+        }
+
+        function toTwoDigit(num)
+        {
+            if(num>=10)
+            {
+                return ""+num;
+            }
+            else return "0"+num;
+        }
+
+        
+        let clockInterval;
+        
+        function init()
+        {
+            updateTime();
+
+            //adjust breathing to seconds
+            let currDate = new Date();          
+            let ms = currDate.getMilliseconds();
+            let difference = 1000-(ms%1000);
+
+            document.getElementById("clock-text-separator").style.animation = 'none';
+            document.getElementById("clock-text-separator").offsetHeight;
+            document.getElementById("clock-text-separator").style.animation = null;
+            document.getElementById("clock-text").style.setProperty("--seconds-delay", "-"+ms+"ms");
+            
+            clearInterval(clockInterval);
+            setTimeout(() => {
+                clockInterval = setInterval(() => {
+                    updateTime();
+                }, 100);
+            }, difference);
+
+
+            document.getElementById("clock").dataset.hoursystem = hourMode;
+
+            let maxWidth = document.getElementById("clock").offsetWidth;
+            document.getElementById("rotator-container").style.setProperty("--max-width",maxWidth+"px");
+            
+            //initial label rotation                
+            let parent = document.getElementById("rotator");
+            if(parent.children.length<=1) return;
+            let elem = parent.children[0];
+            
+            let duration = parseInt(elem.dataset.duration);
+            if(isNaN(duration))
+            {
+                duration = labelRotationDuration;
+            }
+
+            duration = Math.max(duration, labelRotationDelayMinimum);
+
+            labelTimeout = setTimeout(updateLabel, duration);
+        }
+
+        function updateLabelManual()
+        {
+            if(isTransitioning)return;
+
+            isTransitioning = true;
+            if(labelTimeout)
+            {
+                clearTimeout(labelTimeout);
+            }
+            labelTimeout = setTimeout(updateLabel, 10);
+        }
+
+        async function updateLabel()
+        {
+            let parent = document.getElementById("rotator");
+            if(parent.children.length<=1) return;
+
+            let elem = parent.children[0];
+
+            parent.classList.add("animate");
+            
+            clearTimeout(labelTimeout);
+            isTransitioning = true;
+            await delay(labelRotationDelay);
+            isTransitioning = false;
+            parent.classList.remove("animate");                
+            parent.append(elem);
+
+            let nextChild = parent.children[0];
+            let duration = parseInt(nextChild.dataset.duration);
+            if(isNaN(duration))
+            {
+                duration = labelRotationDuration;
+            }
+
+            duration = Math.max(duration, labelRotationDelayMinimum);
+
+            labelTimeout = setTimeout(updateLabel, duration);
+        }
+
+        function delay(ms)
+        {
+            return new Promise(resolve=>setTimeout(resolve, ms));
+        }
+        
+    </script>
+</head>
+<body id="body">
+    <div id="main-container" onclick="updateLabelManual()">
+        <div id="clock" data-hoursystem="24" data-separator="breath">
+            <div id="clock-icon">
+                <div id="analog-clock-body">
+                    <div id="analog-clock-hour" class="analog-clock-hand"></div>
+                    <div id="analog-clock-minute" class="analog-clock-hand"></div>
+                    <div id="analog-clock-second" class="analog-clock-hand"></div>
+                    <div id="analog-clock-center" class="analog-clock-hand"></div>
+                </div>
+            </div>
+            <div id="clock-container">
+                <div id="clock-text">
+                    <div id="clock-text-hour">00</div>
+                    <div id="clock-text-separator">.</div>
+                    <div id="clock-text-minute"></div>
+                    <div id="clock-text-ampm"></div>
+                </div>
+            </div>                
+        </div>
+        <div id="rotator-container">
+            <div id="rotator" data-direction="down">
+                
+            </div>
+        </div>
+    </div>
+    <script>
+
+        applySettings();
+
+        init();
+    </script>
+</body>
+</html>
